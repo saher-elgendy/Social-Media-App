@@ -20,4 +20,47 @@ firebase.initializeApp(firebaseConfig);
 
 const db = admin.firestore();
 
+app.post('/signup', (req, res) => {
+  const newUser = {
+    emai: req.body.email,
+    password: req.body.password,
+    confirmPassword: req.body.confirmPassword,
+    handle: req.body.handle
+  }
+
+  let token, userId;
+  db.doc(`/users/${newUser.handle}`).get().then(doc => {
+    if (doc.exists) {
+      return res.status(400).json({ handle: 'this handle already exists' })
+    } else {
+      return firebase.auth().signInWithEmailAndPassword(newUser.email, newUser.password)
+    }
+  })
+    .then(data => {
+      userId = data.user.uid;
+      return data.user.getIdToken();
+    })
+    .then(idToken => {
+      token = idToken;
+      const userCredentials = {
+        handle: newUser.handle,
+        email: newUser.email,
+        createdAt: new date().toISOString(),
+        userId
+      }
+
+      return db.doc(`/users/${newUser.handle}`).set(userCredentials)
+    })
+    .then(() => {
+      return res.status(201).json({ token });
+    })
+    .catch(err => {
+      if(err.code === "auth/email-already-in-use") {
+        return res.status(400).json({email: 'Email is alrready in use'})
+      } else {
+        return res.status(500).json({general: 'something went wrong, please try again'})
+      }
+    })
+})
+
 exports.api = functions.region('europe-west1').https.onRequest(app)
