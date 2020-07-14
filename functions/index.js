@@ -20,6 +20,9 @@ firebase.initializeApp(firebaseConfig);
 
 const db = admin.firestore();
 
+
+const isEmpty = (string) => string.trim() === '' ? true : false;
+
 app.post('/signup', (req, res) => {
   const newUser = {
     emai: req.body.email,
