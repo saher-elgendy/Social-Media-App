@@ -31,7 +31,7 @@ const isEmail = (email) => {
 
 app.post('/signup', (req, res) => {
   const newUser = {
-    emai: req.body.email,
+    email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     handle: req.body.handle
@@ -39,10 +39,11 @@ app.post('/signup', (req, res) => {
 
   let errors = {};
 
+  if(!isEmail(newUser.email)) errors.email = "email must be a valid email";
   if (isEmpty(newUser.email)) errors.email = "Must not be empty";
   if (isEmpty(newUser.password)) errors.password = "Must not be empty";
   if (newUser.password !== newUser.confirmPassword) errors.confirmPassword = "passwords must match";
-  if (isEmptympty(newUser.handle)) errors.handle = "Must not be empty";
+  if (isEmpty(newUser.handle)) errors.handle = "Must not be empty";
 
   if (Object.keys(errors).length > 0) res.status(400).json({ errors })
 
@@ -78,6 +79,25 @@ app.post('/signup', (req, res) => {
       } else {
         return res.status(500).json({ general: 'something went wrong, please try again' })
       }
+    })
+});
+
+app.post('/signin', (req, res) => {
+  const user = {
+    email: req.body.email,
+    password: req.body.password
+  };
+
+  firebase.auth().signInWithEmailAndPassword(user.email, user.password)
+    .then(data => {
+      return data.user.getIdToken();
+    })
+    .then(token => {
+      return res.status(201).json({ token })
+    })
+    .catch(err => {
+      console.error(err);
+      return res.status(500).json({ error: 'something went wrong' })
     })
 })
 
