@@ -20,4 +20,4 @@ firebase.initializeApp(firebaseConfig);
 
 const db = admin.firestore();
 
-exports.api = functions.https.onRequest(app)
+exports.api = functions.region('europe-west1').https.onRequest(app)
