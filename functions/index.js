@@ -20,7 +20,7 @@ firebase.initializeApp(firebaseConfig);
 
 const db = admin.firestore();
 
- app.post('/screams', (req, res) => {
+app.post('/screams', (req, res) => {
   if (req.body.body.trim() === '') {
     return res.status(400).json({ body: 'Body must not be empty' });
   }
@@ -34,7 +34,7 @@ const db = admin.firestore();
   db.collection('secondScream')
     .add(newScream)
     .then((doc) => {
-      return res.status(201).json({message: `document ${doc.id} created successfully`})
+      return res.status(201).json({ message: `document ${doc.id} created successfully` })
     })
     .catch((err) => {
       res.status(500).json({ error: 'something went wrong' });
@@ -44,26 +44,45 @@ const db = admin.firestore();
 
 const isEmpty = (string) => string.trim() === '' ? true : false;
 
-// const isEmail = (email) => {
-//   const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-//   if (email.match(regEx)) return true;
-//   else return false;
-// }
+const isEmail = (email) => {
+  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  if (email.match(regEx)) return true;
+  else return false;
+}
 
-// 
-app.post('/signup', (req, res) => {
+const FBAuth = (req, res, next) => {
+  let idToken;
+  if (req.headers.authorization && req.headers.authorization.startWith('bearer ')) {
+    idToken = req.headers.authorization.split('bearer ')[1];
+  } else {
+    console.error('no token found');
+    return res.status(400).json({ error: unauthorized })
+  }
+
+  admin.auth().verifyIdToken(idToken).then(decodedToken => {
+    req.user = decodedToken;
+    console.log(decodedToken);
+    return db.collection('users').where('userId', '==', req.user.uid)
+      .limit(1)
+      .get();
+
+  }).then(data => {
+    req.user.handle = data.docs[0].data().handle;
+    return next();
+  })
+  .catch(err => {
+    console.error(err);
+    return res.status(403).json(err)
+  })
+}
+
+app.post('/signup', FBAuth, (req, res) => {
   const newUser = {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
     handle: req.body.handle,
   };
-
-  // const { valid, errors } = validateSignupData(newUser);
-
-  // if(!valid) return res.status(400).json(errors);
-
-  // const noImg = "no-img.png";
 
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
