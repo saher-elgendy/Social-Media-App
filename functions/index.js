@@ -20,67 +20,94 @@ firebase.initializeApp(firebaseConfig);
 
 const db = admin.firestore();
 
+ app.post('/screams', (req, res) => {
+  if (req.body.body.trim() === '') {
+    return res.status(400).json({ body: 'Body must not be empty' });
+  }
+
+  const newScream = {
+    body: req.body.body,
+    userHandle: req.body.handle,
+    createdAt: new Date().toISOString()
+  };
+
+  db.collection('secondScream')
+    .add(newScream)
+    .then((doc) => {
+      return res.status(201).json({message: `document ${doc.id} created successfully`})
+    })
+    .catch((err) => {
+      res.status(500).json({ error: 'something went wrong' });
+      console.error(err);
+    });
+})
 
 const isEmpty = (string) => string.trim() === '' ? true : false;
 
-const isEmail = (email) => {
-  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
-  if (email.match(regEx)) return true;
-  else return false;
-}
+// const isEmail = (email) => {
+//   const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+//   if (email.match(regEx)) return true;
+//   else return false;
+// }
 
+// 
 app.post('/signup', (req, res) => {
   const newUser = {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle
-  }
+    handle: req.body.handle,
+  };
 
-  let errors = {};
+  // const { valid, errors } = validateSignupData(newUser);
 
-  if(!isEmail(newUser.email)) errors.email = "email must be a valid email";
-  if (isEmpty(newUser.email)) errors.email = "Must not be empty";
-  if (isEmpty(newUser.password)) errors.password = "Must not be empty";
-  if (newUser.password !== newUser.confirmPassword) errors.confirmPassword = "passwords must match";
-  if (isEmpty(newUser.handle)) errors.handle = "Must not be empty";
+  // if(!valid) return res.status(400).json(errors);
 
-  if (Object.keys(errors).length > 0) res.status(400).json({ errors })
+  // const noImg = "no-img.png";
 
   let token, userId;
-  db.doc(`/users/${newUser.handle}`).get().then(doc => {
-    if (doc.exists) {
-      return res.status(400).json({ handle: 'this handle already exists' })
-    } else {
-      return firebase.auth().signInWithEmailAndPassword(newUser.email, newUser.password)
-    }
-  })
-    .then(data => {
+  db.doc(`/users/${newUser.handle}`)
+    .get()
+    .then((doc) => {
+      if (doc.exists) {
+        return res.status(400).json({ handle: "this handle is already taken" });
+      } else {
+        return firebase
+          .auth()
+          .createUserWithEmailAndPassword(newUser.email, newUser.password);
+      }
+    })
+    .then((data) => {
       userId = data.user.uid;
       return data.user.getIdToken();
     })
-    .then(idToken => {
+    .then((idToken) => {
       token = idToken;
       const userCredentials = {
         handle: newUser.handle,
         email: newUser.email,
-        createdAt: new date().toISOString(),
-        userId
-      }
-
-      return db.doc(`/users/${newUser.handle}`).set(userCredentials)
+        createdAt: new Date().toISOString(),
+        //TODO Append token to imageUrl. Work around just add token from image in storage.
+        // imageUrl: `https://firebasestorage.googleapis.com/v0/b/${config.storageBucket}/o/${noImg}?alt=media`,
+        userId,
+      };
+      return db.doc(`/users/${newUser.handle}`).set(userCredentials);
     })
     .then(() => {
       return res.status(201).json({ token });
     })
-    .catch(err => {
+    .catch((err) => {
+      console.error(err);
       if (err.code === "auth/email-already-in-use") {
-        return res.status(400).json({ email: 'Email is alrready in use' })
+        return res.status(400).json({ email: "Email is already is use" });
       } else {
-        return res.status(500).json({ general: 'something went wrong, please try again' })
+        return res
+          .status(500)
+          .json({ general: "Something went wrong, please try again" });
       }
-    })
+    });
 });
+
 
 app.post('/signin', (req, res) => {
   const user = {
