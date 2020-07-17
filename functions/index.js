@@ -89,7 +89,8 @@ app.post('/signup', FBAuth, (req, res) => {
   if(!isEmail(newUser.email)) errors.email =  'email is not valid';
   if(isEmpty(newuser.email)) errors.email = 'Must not be empty';
   if(isEmpty(newUser.password)) errors.password = 'Must mnot be empty';
-
+  if(newUser.confirmPassword !== newUser.password) errors.confirmPassword = 'passwords must match';
+  
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
     .get()
