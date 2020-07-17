@@ -52,11 +52,11 @@ const isEmail = (email) => {
 
 const FBAuth = (req, res, next) => {
   let idToken;
-  if (req.headers.authorization && req.headers.authorization.startWith('bearer ')) {
-    idToken = req.headers.authorization.split('bearer ')[1];
+  if (req.headers.Authorization && req.headers.Authorization.startWith('Bearer ')) {
+    idToken = req.headers.authorization.split('Bearer ')[1];
   } else {
     console.error('no token found');
-    return res.status(400).json({ error: unauthorized })
+    return res.status(400).json({ error: 'unauthorized' })
   }
 
   admin.auth().verifyIdToken(idToken).then(decodedToken => {
@@ -76,13 +76,19 @@ const FBAuth = (req, res, next) => {
   })
 }
 
+
+let errors = {};
 app.post('/signup', FBAuth, (req, res) => {
   const newUser = {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.body.handle,
+    handle: req.user.handle,
   };
+
+  if(!isEmail(newUser.email)) errors.email =  'email is not valid';
+  if(isEmpty(newuser.email)) errors.email = 'Must not be empty';
+  if(isEmpty(newUser.password)) errors.password = 'Must mnot be empty';
 
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
