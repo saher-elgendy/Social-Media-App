@@ -1,8 +1,10 @@
 const functions = require('firebase-functions');
-const admin = require('firebase-admin');
-admin.initializeApp();
 
 const app = require('express')();
+
+const admin = require('firebase-admin');
+
+admin.initializeApp();
 
 const firebaseConfig = {
   apiKey: "AIzaSyC85eU0g7ZK4hI6Di4P75LsW7sp2rA0AfU",
@@ -18,9 +20,58 @@ const firebaseConfig = {
 const firebase = require('firebase');
 firebase.initializeApp(firebaseConfig);
 
+
 const db = admin.firestore();
 
-app.post('/screams', (req, res) => {
+app.get('/screams', (req, res) => {
+  db.collection('screams').orderBy('createdAt', 'desc')
+    .get()
+    .then(data => {
+      let screams = [];
+      data.forEach(doc => {
+        screams.push({
+          screamId: doc.id,
+          body: doc.data().body,
+          userHandle: doc.data().userHandle,
+          createdAt: doc.data().createdAt,
+          commentCount: doc.data().commentCount,
+          likeCount: doc.data().likeCount
+        })
+      })
+      return res.json({ screams })
+    })
+    .catch(err => {
+      console.error(err)
+      return res.status(500).json({ error: err.code })
+    })
+})
+const FBAuth = (req, res, next) => {
+  let idToken;
+  if (req.headers.authorization && req.headers.authorization.startsWith('Bearer ')) {
+    idToken = req.headers.authorization.split('Bearer ')[1];
+  } else {
+    console.error('no token found');
+    return res.status(400).json({ error: 'unauthorized' })
+  }
+
+  admin.auth().verifyIdToken(idToken).then(decodedToken => {
+    req.user = decodedToken;
+    console.log(decodedToken);
+    return db.collection('users').where('userId', '==', req.user.uid)
+      .limit(1)
+      .get();
+
+  }).then(data => {
+    req.user.handle = data.docs[0].data().handle;
+    return next();
+  })
+    .catch(err => {
+      console.error(err);
+      return res.status(403).json(err)
+    })
+}
+
+app.post('/screams', FBAuth, (req, res) => {
   if (req.body.body.trim() === '') {
     return res.status(400).json({ body: 'Body must not be empty' });
   }
@@ -45,52 +96,26 @@ app.post('/screams', (req, res) => {
 const isEmpty = (string) => string.trim() === '' ? true : false;
 
 const isEmail = (email) => {
-  const regEx = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+  const regEx = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
   if (email.match(regEx)) return true;
   else return false;
 }
 
-const FBAuth = (req, res, next) => {
-  let idToken;
-  if (req.headers.Authorization && req.headers.Authorization.startWith('Bearer ')) {
-    idToken = req.headers.authorization.split('Bearer ')[1];
-  } else {
-    console.error('no token found');
-    return res.status(400).json({ error: 'unauthorized' })
-  }
-
-  admin.auth().verifyIdToken(idToken).then(decodedToken => {
-    req.user = decodedToken;
-    console.log(decodedToken);
-    return db.collection('users').where('userId', '==', req.user.uid)
-      .limit(1)
-      .get();
-
-  }).then(data => {
-    req.user.handle = data.docs[0].data().handle;
-    return next();
-  })
-  .catch(err => {
-    console.error(err);
-    return res.status(403).json(err)
-  })
-}
-
-
 let errors = {};
-app.post('/signup', FBAuth, (req, res) => {
+app.post('/signup', (req, res) => {
   const newUser = {
     email: req.body.email,
     password: req.body.password,
     confirmPassword: req.body.confirmPassword,
-    handle: req.user.handle,
+    handle: req.body.handle,
   };
 
-  if(!isEmail(newUser.email)) errors.email =  'email is not valid';
-  if(isEmpty(newuser.email)) errors.email = 'Must not be empty';
-  if(isEmpty(newUser.password)) errors.password = 'Must mnot be empty';
-  if(newUser.confirmPassword !== newUser.password) errors.confirmPassword = 'passwords must match';
-  
+  if (!isEmail(newUser.email)) errors.email = 'email is not valid';
+  if (isEmpty(newUser.email)) errors.email = 'Must not be empty';
+  if (isEmpty(newUser.password)) errors.password = 'Must not be empty';
+  if (newUser.confirmPassword !== newUser.password) errors.confirmPassword = 'passwords must match';
+
+  if (Object.keys(errors).length > 0) res.status(400).json({ errors })
   let token, userId;
   db.doc(`/users/${newUser.handle}`)
     .get()
