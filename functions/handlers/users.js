@@ -18,7 +18,7 @@ exports.signup = (req, res) => {
     const { errors, valid } = validateSignupData(newUser);
     if (!valid) return res.status(400).json({ errors })
 
-    const noImg = 'no-image.jpg';
+    const noImg = 'no-img.jpg';
 
     let token, userId;
     db.doc(`/users/${newUser.handle}`)
@@ -123,5 +123,5 @@ exports.uploadImage = () => {
             });
     });
 
-    busboy.end(req.rawBody);
+    busboy.end(req.rawBody)
 }
