@@ -2,7 +2,7 @@ const functions = require('firebase-functions');
 
 const app = require('express')();
 
-const { getAllScreams, postOneScream, getScream } = require('./handlers/screams');
+const { getAllScreams, postOneScream, getScream, commentOnScream } = require('./handlers/screams');
 const { signup, signin, uploadImage, addUserDetails, getAuthenticatedUser } = require('./handlers/users');
 const FBAuth = require('./util/fbAuth');
 
