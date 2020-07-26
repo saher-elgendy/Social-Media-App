@@ -18,7 +18,8 @@ const {
     signin,
     uploadImage,
     addUserDetails,
-    getAuthenticatedUser
+    getAuthenticatedUser,
+    getUserDetails,
 } = require('./handlers/users');
 
 //scream routes
@@ -30,12 +31,13 @@ app.post('/scream/:screamId/comment', FBAuth, commentOnScream);
 app.get('/scream/:screamId/like', FBAuth, likeScream);
 app.get('/scream/:screamId/unlike', FBAuth, unlikeScream);
 
-//users Route
+//users Routes
 app.post('/signup', signup);
 app.post('/signin', signin);
 app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, addUserDetails);
-app.get('/user', FBAuth, getAuthenticatedUser)
+app.get('/user', FBAuth, getAuthenticatedUser);
+app.get('/user/:handle', FBAuth, getUserDetails);
 //https://europe-west1-chat-app-ebabf.cloudfunctions.net/api
 exports.api = functions.region('europe-west1').https.onRequest(app);
 
@@ -57,8 +59,7 @@ exports.createNotificationOnLike = functions.region('europe-west1')
                             read: false,
                             screamId: doc.id
                         })
-                }
-                else {
+                } else {
                     return null;
                 }
             })
@@ -77,14 +78,14 @@ exports.deleteNotificationOnUnlike = functions.region('europe-west1')
     .document('likes/{id}')
     .onDelete(snapshot => {
         db.doc(`/notifications/${snapshot.id}`)
-        .delete()
-        .then(() => {
-            return;
-        })
-        .catch(err => {
-            console.error(err);
-            return;
-        })
+            .delete()
+            .then(() => {
+                return;
+            })
+            .catch(err => {
+                console.error(err);
+                return;
+            })
     })
 //create notification on comment
 exports.createNotificationOnComment = functions.region('europe-west1')
@@ -104,8 +105,7 @@ exports.createNotificationOnComment = functions.region('europe-west1')
                             read: false,
                             screamId: doc.id
                         })
-                }
-                else {
+                } else {
                     return null;
                 }
             })
