@@ -20,6 +20,7 @@ const {
     addUserDetails,
     getAuthenticatedUser,
     getUserDetails,
+    markNotificationsRead
 } = require('./handlers/users');
 
 //scream routes
@@ -38,6 +39,7 @@ app.post('/user/image', FBAuth, uploadImage);
 app.post('/user', FBAuth, addUserDetails);
 app.get('/user', FBAuth, getAuthenticatedUser);
 app.get('/user/:handle', FBAuth, getUserDetails);
+app.post('/notifications', FBAuth, markNotificationsRead)
 //https://europe-west1-chat-app-ebabf.cloudfunctions.net/api
 exports.api = functions.region('europe-west1').https.onRequest(app);
 
