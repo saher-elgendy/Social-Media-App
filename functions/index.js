@@ -110,6 +110,7 @@ exports.createNotificationOnComment = functions.region('europe-west1')
             });
     })
 
+//this function change image on ll placesonce user change his image
 exports.onUserImageChange = functions
     .region('europe-west1')
     .firestore.document(`/users/{userId}`)
@@ -130,4 +131,35 @@ exports.onUserImageChange = functions
         } else {
             return true;
         }
+    });
+//this function remote likwa, comments,and notifications on screams deleted
+exports.onScreamDelete = functions.region('europe-west1')
+    .firestore.document(`/screams/{screamId}`)
+    .onDelete((snapshot, context) => {
+        const screamId = context.params.screamId;
+        const batch = db.batch();
+
+        return db.collection('comments').where('screamId', '==', screamId)
+            .get()
+            .then(data => {
+                data.forEach(doc => {
+                    batch.delete(db.doc(`/comments/${doc.id}`))
+                })
+                return db.collection('likes').where('screamId', '==', screamId).get();
+            })
+            .then(data => {
+                data.forEach(doc => {
+                    batch.delete(db.doc(`/likes/${doc.id}`))
+                });
+                return db.collection('notifications').where('screamId', '==', screamId).get();
+            })
+            .then(data => {
+                data.forEach(doc => {
+                    batch.delete(db.doc(`/notifications/${doc.id}`))
+                })
+                return batch.commit();
+            })
+            .catch(err => {
+                console.error(err);
+            });
     });
