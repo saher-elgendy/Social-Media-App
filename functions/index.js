@@ -48,7 +48,7 @@ exports.createNotificationOnLike = functions.region('europe-west1')
     .firestore
     .document('likes/{id}')
     .onCreate(snapshot => {
-       return db.doc(`/screams/${snapshot.data().screamId}`)
+        return db.doc(`/screams/${snapshot.data().screamId}`)
             .get()
             .then(doc => {
                 if (doc.exists && doc.data().userHandle !== snapshot.data().userHandle) {
@@ -75,7 +75,7 @@ exports.deleteNotificationOnUnlike = functions.region('europe-west1')
     .firestore
     .document('likes/{id}')
     .onDelete(snapshot => {
-       return db.doc(`/notifications/${snapshot.id}`)
+        return db.doc(`/notifications/${snapshot.id}`)
             .delete()
             .catch(err => {
                 console.error(err);
@@ -101,7 +101,7 @@ exports.createNotificationOnComment = functions.region('europe-west1')
                             screamId: doc.id
                         })
                 } else {
-                    return res.status(404).json({error: 'Not found'});
+                    return res.status(404).json({ error: 'Not found' });
                 }
             })
             .catch(err => {
@@ -109,3 +109,25 @@ exports.createNotificationOnComment = functions.region('europe-west1')
                 return;
             });
     })
+
+exports.onUserImageChange = functions
+    .region('europe-west1')
+    .firestore.document(`/users/{userId}`)
+    .onUpdate(change => {
+        if (change.before.data().imageUrl !== change.after.data().imageUrl) {
+            let batch = db.batch();
+            return db.collection('screams')
+                .where('userHandle', '==', change.before.data().handle)
+                .get()
+                .then(data => {
+                    data.forEach(doc => {
+                        const scream = db.doc(`/screams/${doc.id}`);
+                        batch.update(scream, { userImage: change.after.data().imageUrl })
+                    });
+
+                    return batch.commit();
+                })
+        } else {
+            return true;
+        }
+    });
