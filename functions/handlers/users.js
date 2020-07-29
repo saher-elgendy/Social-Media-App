@@ -70,7 +70,7 @@ exports.signin = (req, res) => {
   };
 
   const { errors, valid } = validateSigninData(user);
-  if (!valid) res.status(400).json({ errors })
+  if (!valid) return res.status(400).json({ errors })
 
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
     .then(data => {
@@ -81,7 +81,7 @@ exports.signin = (req, res) => {
     })
     .catch(err => {
       console.error(err);
-      return res.status(500).json({ error: 'something went wrong' })
+      return res.status(403).json({ general: 'Wrong credentials, please try again' })
     })
 }
 
