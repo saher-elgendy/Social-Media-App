@@ -1,5 +1,5 @@
 import createMuiTheme from '@material-ui/core/styles/createMuiTheme';
-import MuiThemeProvider from '@material-ui/core/styles/MuiThemeProvider';
+import { MuiThemeProvider } from '@material-ui/core/styles';
 import React from 'react';
 import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import './App.css';
@@ -22,7 +22,7 @@ const theme = createMuiTheme({
     }
   },
   typography: {
-    userNextVariants: true 
+    userNextVariants: true
   }
 })
 
