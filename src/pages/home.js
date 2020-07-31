@@ -23,7 +23,7 @@ const Home = () => {
                     screams ?
                         screams.map(scream => {
                             return (
-                                <Scream scream={scream}/>
+                                <Scream key={scream.screamId} scream={scream}/>
                             )
                         }) : 'Loading...'
                 }
