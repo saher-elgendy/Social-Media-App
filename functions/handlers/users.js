@@ -16,7 +16,7 @@ exports.signup = (req, res) => {
   };
 
   const { errors, valid } = validateSignupData(newUser);
-  if (!valid) return res.status(400).json({ errors })
+  if (!valid) return res.status(400).json(errors)
 
   const noImg = 'no-img.jpg';
 
@@ -70,7 +70,7 @@ exports.signin = (req, res) => {
   };
 
   const { errors, valid } = validateSigninData(user);
-  if (!valid) return res.status(400).json({ errors })
+  if (!valid) return res.status(400).json(errors)
 
   firebase.auth().signInWithEmailAndPassword(user.email, user.password)
     .then(data => {
@@ -169,7 +169,7 @@ exports.getAuthenticatedUser = (req, res) => {
         return db.collection('likes').where('userHandle', '==', req.user.handle).get();
       }
 
-      return res.status(404).json({message: 'User not found'});
+      return res.status(404).json({ message: 'User not found' });
     })
     .then(data => {
       userData.likes = [];
