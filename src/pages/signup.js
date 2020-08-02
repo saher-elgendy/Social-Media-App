@@ -10,39 +10,9 @@ import AppIcon from './../images/icon.png';
 import { Link } from 'react-router-dom';
 
 
-const useStyles = makeStyles({
-    form: {
-        textAlign: 'center',
-    },
-    img: {
-        maxWidth: 60,
-        margin: '1.5rem auto 5px'
-    },
-    textField: {
-        margin: 20
-    },
-    button: {
-        marginTop: 16,
-        display: 'flex',
-        justifyContent: 'center',
-        alignItems: 'center',
-        margin: 'auto',
-        width: 120,
-        height: 50
-    },
-    customError: {
-        color: 'red',
-        fontSize: '0.7rem'
-    },
-    small: {
-        display: 'block',
-        marginTop: '1rem'
-    },
-    circularProgress: {
-        color: '#fff',
-        position: 'absolute'
-    }
-});
+const useStyles = makeStyles(theme => ({
+    ...theme.spread
+}));
 
 const Signup = (props) => {
     const classes = useStyles();
