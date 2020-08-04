@@ -1,29 +1,28 @@
 
-import { Typography, CircularProgress } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
-import axios from 'axios';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
-import AppIcon from './../images/icon.png';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import AppIcon from './../images/icon.png';
+import { loginUser } from './../redux/actions/userActions';
+
 
 
 const useStyles = makeStyles(theme => ({
-   ...theme.spread
+    ...theme.spread
 }));
 
-const Login = (props) => {
+const Login = ({ loginUser, history, UI: { loading, errors } }) => {
     const classes = useStyles();
-
     const [loginData, setLoginData] = useState({
         email: '',
         password: '',
     });
-
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setLoginData({
@@ -33,23 +32,13 @@ const Login = (props) => {
     }
 
     const handleSubmit = (e) => {
+    
         e.preventDefault();
-        setLoading(true);
-
-        axios.post('/signin', loginData)
-            .then(res => {
-                localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-                setLoading(true);
-                props.history.push('/');
-            })
-            .catch(err => {
-                console.log('eror is', err.response.data)
-                setErrors(err.response.data);
-                setLoading(false);
-            })
+        loginUser(loginData, history)
     }
 
-    const { general, email, password } = errors;
+    console.log(errors)
+    const { email, password, general } = errors;
     return (
         <Grid container className={classes.form}>
             <Grid item sm />
@@ -108,6 +97,18 @@ const Login = (props) => {
     )
 }
 
+Login.propTypes = {
+    loginUser: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
+    UI: PropTypes.object.isRequired
+}
 
+const mapStateToProps = (state) => {
+    console.log(state.UI)
+    return {
+        user: state.user,
+        UI: state.UI
+    }
+}
 
-export default Login;
+export default connect(mapStateToProps, { loginUser })(Login);
