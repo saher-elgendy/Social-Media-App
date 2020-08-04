@@ -1,20 +1,22 @@
 
-import { Typography, CircularProgress } from '@material-ui/core';
+import { CircularProgress, Typography } from '@material-ui/core';
 import Button from '@material-ui/core/Button';
 import Grid from '@material-ui/core/Grid';
 import makeStyles from '@material-ui/core/styles/makeStyles';
 import TextField from '@material-ui/core/TextField';
-import axios from 'axios';
 import React, { useState } from 'react';
-import AppIcon from './../images/icon.png';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
+import { signup } from '../redux/actions/userActions';
+import AppIcon from './../images/icon.png';
 
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread
 }));
 
-const Signup = (props) => {
+
+const Signup = ({signup , history, UI: {loading, errors} }) => {
     const classes = useStyles();
 
     const [signupData, setSignupData] = useState({
@@ -23,9 +25,6 @@ const Signup = (props) => {
         confirmPassword: '',
         handle: ''
     });
-
-    const [errors, setErrors] = useState({});
-    const [loading, setLoading] = useState(false);
 
     const handleChange = (e) => {
         setSignupData({
@@ -36,21 +35,11 @@ const Signup = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-        setLoading(true);
-
-        axios.post('/signup', signupData)
-            .then(res => {
-                localStorage.setItem('FBIdToken', `Bearer ${res.data.token}`);
-                setLoading(true);
-                props.history.push('/');
-            })
-            .catch(err => {
-                setErrors(err.response.data);
-                setLoading(false);
-            })
+        signup(signupData, history);
     }
 
     const { general, email, password, confirmPassword, handle } = errors;
+
     return (
         <Grid container className={classes.form}>
             <Grid item sm />
@@ -93,7 +82,7 @@ const Signup = (props) => {
                         error={confirmPassword ? true : false}
                         fullWidth
                     />
-                     <TextField
+                    <TextField
                         id="handle"
                         type="text"
                         name="handle"
@@ -132,6 +121,10 @@ const Signup = (props) => {
     )
 }
 
+const mapStateToProps = state => ({
+    user: state.user,
+    UI: state.UI
+})
 
 
-export default Signup;
+export default connect(mapStateToProps, { signup })(Signup);
