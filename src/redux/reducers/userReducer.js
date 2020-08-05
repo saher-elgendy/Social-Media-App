@@ -1,13 +1,14 @@
-import { SET_AUTHENTICATED, SET_UNAUTHENTICATED, SET_USER } from './../types';
+import { SET_AUTHENTICATED, SET_UNAUTHENTICATED, SET_USER, LOADING_USER } from './../types';
 
-const intiialState = {
+const intialState = {
     authenticated: false,
+    loading: false,
     credentials: {},
     likes: [],
     notifications: []
 };
 
-export default (state = intiialState, action) => {
+export default (state = intialState, action) => {
     switch (action.type) {
         case SET_AUTHENTICATED:
             return {
@@ -18,14 +19,20 @@ export default (state = intiialState, action) => {
         case SET_UNAUTHENTICATED:
             return {
                 ...state,
-                authmeticated: false
+                authenticated: false
             }
 
         case SET_USER:
             return {
                 authenticated: true,
-                ...action.payload
+                loading: false,
+                ...action.payload,
             }
+            case LOADING_USER:
+                return {
+                    ...state,
+                    loading: true,
+                }
 
         default:
             return state;
