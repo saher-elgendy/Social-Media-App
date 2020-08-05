@@ -9,7 +9,7 @@ import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signup } from '../redux/actions/userActions';
 import AppIcon from './../images/icon.png';
-
+import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread
@@ -121,9 +121,15 @@ const Signup = ({signup , history, UI: {loading, errors} }) => {
     )
 }
 
+Signup.propTypes = {
+    user: PropTypes.object.isRequired,
+    UI: PropTypes.object.isRequired,
+    signup: PropTypes.func.isRequired
+}
+
 const mapStateToProps = state => ({
     user: state.user,
-    UI: state.UI
+    UI: state.UI,
 })
 
 
