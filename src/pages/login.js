@@ -31,13 +31,12 @@ const Login = ({ loginUser, history, UI: { loading, errors } }) => {
         })
     }
 
-    const handleSubmit = (e) => {
-    
+    const handleSubmit = (e) => {  
         e.preventDefault();
-        loginUser(loginData, history)
+        loginUser(loginData, history);
     }
 
-    console.log(errors)
+
     const { email, password, general } = errors;
     return (
         <Grid container className={classes.form}>
@@ -104,7 +103,6 @@ Login.propTypes = {
 }
 
 const mapStateToProps = (state) => {
-    console.log(state.UI)
     return {
         user: state.user,
         UI: state.UI
