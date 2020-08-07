@@ -1,19 +1,16 @@
 
-import { CircularProgress, Typography } from '@material-ui/core';
-import Button from '@material-ui/core/Button';
-import Grid from '@material-ui/core/Grid';
-import makeStyles from '@material-ui/core/styles/makeStyles';
-import TextField from '@material-ui/core/TextField';
+import { Button, CircularProgress, Grid, TextField, Typography } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { signup } from '../redux/actions/userActions';
 import AppIcon from './../images/icon.png';
-import PropTypes from 'prop-types';
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread
-}));
+}));    
 
 
 const Signup = ({signup , history, UI: {loading, errors} }) => {
