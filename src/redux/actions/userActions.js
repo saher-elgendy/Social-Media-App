@@ -67,3 +67,25 @@ const setAuthorizationHeader = (token) => {
 }
 
 
+export const editUserDetails = userDetails => dispatch => {
+    dispatch({type: LOADING_USER});
+
+    console.log(userDetails)
+    axios.post('/user', userDetails)
+    .then(() => {
+        dispatch(getUserData());
+    })
+    .catch(err => console.log(err))
+}
+
+
+//upload image action creator
+export const uploadImage = (formData) => dispatch => {
+    dispatch({type: LOADING_USER});
+
+    axios.post('/user/image', formData)
+    .then(() => {
+        dispatch(getUserData)
+    })
+    .catch(err => console.log(err))
+}
