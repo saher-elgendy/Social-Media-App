@@ -1,23 +1,22 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import makeStyles from '@material-ui/core/styles/makeStyles';
+import React, { useRef } from 'react';
 import PropTypes from 'prop-types';
-import Button from '@material-ui/core/Button';
-import Paper from '@material-ui/core/Paper';
-import Typography from '@material-ui/core/Typography';
-import LocationOn from '@material-ui/icons/LocationOn'
-import LinkIcon from '@material-ui/icons/Link'
-import CalendarToday from '@material-ui/icons/CalendarToday';
-import dayjs from 'dayjs';
-import MuiLink from '@material-ui/core/Link';
+import { Link } from 'react-router-dom';
 import { connect } from 'react-redux';
+import EditUserDetails from './EditUserDetails';
+
+import { Button, IconButton, Paper, Tooltip, Typography, Link as MuiLink } from '@material-ui/core';
+import { makeStyles } from '@material-ui/core/styles';
+import { CalendarToday, Edit, LocationOn, Link as LinkIcon } from '@material-ui/icons';
+import dayjs from 'dayjs';
+import { uploadImage } from './../redux/actions/userActions';
+
 
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread
 }));
 
-const Profile = ({ user }) => {
+const Profile = ({ user, uploadImage }) => {
     const {
         authenticated,
         loading,
@@ -25,12 +24,39 @@ const Profile = ({ user }) => {
     } = user;
 
     const classes = useStyles();
-    console.log(loading)
+
+    //creating image input ref
+    const imageInput = useRef();
+
+    const handleImageChange = (e) => {
+        const image = e.target.files[0];
+
+        const formData = new FormData();
+        formData.append('image', image, image.name);
+        uploadImage()
+    }
+
+    const handleEditPicture = () => {
+        imageInput.current.click();
+    }
+
+
     const detailedPorfile =
         <Paper className={classes.paper}>
             <div className={classes.profile}>
                 <div className="image-wrapper">
                     <img className="profile-image" src={imageUrl} alt="profile" />
+                    <input
+                        type="file"
+                        ref={imageInput}
+                        onChange={handleImageChange}
+                        hidden="hidden"
+                    />
+                    <Tooltip title="Edit Profile Picture" placement="top">
+                        <IconButton onClick={handleEditPicture} className="button">
+                            <Edit color="primary" />
+                        </IconButton>
+                    </Tooltip>
                 </div>
                 <hr />
                 <div className="profile-details">
@@ -59,6 +85,7 @@ const Profile = ({ user }) => {
                     <CalendarToday color="primary" />{' '}
                     <span>Joined {dayjs(createdAt).format('MMM YYYY')}</span>
                 </div>
+                <EditUserDetails />
             </div>
         </Paper>
 
@@ -86,11 +113,12 @@ const Profile = ({ user }) => {
 }
 
 Profile.propTypes = {
-    user: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired,
+    uploadImage: PropTypes.func.isRequired
 }
 
 const mapStateToProps = state => ({
     user: state.user
 })
 
-export default connect(mapStateToProps)(Profile)
+export default connect(mapStateToProps, { uploadImage })(Profile)
