@@ -1,11 +1,14 @@
 import { Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-//dayjs
+import { Chat, FavoriteBorder, Favorite } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
+import PropTypes from 'prop-types';
 import React from 'react';
+import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
-
+import { likeScream, unlikeScream } from './../redux/actions/dataActions';
+import ReusableButton from './reusable/ReusableButton';
 
 const useStyles = makeStyles({
     card: {
@@ -21,11 +24,58 @@ const useStyles = makeStyles({
     }
 })
 
-const Scream = (props) => {
-    const { scream: { body, createdAt, userImage, userHandle, screamId, likeCount, commentCount } } = props;
+const Scream = ({ user: { likes, authenticated }, scream, ...props }) => {
+    const { body, createdAt, userImage, userHandle, screamId, likeCount, commentCount } = scream;
     const classes = useStyles();
 
-    dayjs.extend(calendar)
+    dayjs.extend(calendar);
+
+    const liked = () => {
+        if (likes && likes.find(like => like.screamId === scream.screamId)) {
+            return true
+        } else {
+            return false;
+        }
+    }
+
+    const likeScream = () => {
+        props.likeScream(screamId);
+    }
+
+    const unlikeScream = () => {
+        props.unlikeScream(screamId);
+    }
+
+    const likeButton = !authenticated ?
+        (<ReusableButton title="Like">
+            <Link to="/login">
+                <FavoriteBorder color="primary" />
+            </Link>
+        </ReusableButton>) :
+        (
+            liked() ? (
+                <ReusableButton title="Undo Like" onClick={unlikeScream}>
+                    <Favorite color="primary" />
+                </ReusableButton>
+            ) : (
+                    <ReusableButton title="Like" onClick={likeScream}>
+                        <FavoriteBorder color="primary" />
+                    </ReusableButton>
+                )
+        )
+
+    const commentButton = !authenticated ? (
+        <ReusableButton title="Comment Scream">
+            <Link to="/login">
+                <Chat color="primary" />
+            </Link>
+        </ReusableButton>
+    ) : (
+            <ReusableButton title="Comment scream">
+                <Chat color="primary" />
+            </ReusableButton>
+        )
+
     return (
         <Card className={classes.card}>
             <CardMedia
@@ -42,9 +92,25 @@ const Scream = (props) => {
                 >{userHandle}</Typography>
                 <Typography variant="body2" color="textSecondary">{dayjs().calendar(dayjs(createdAt))}</Typography>
                 <Typography variant="body1">{body}</Typography>
+                {likeButton}
+                <span>{likeCount}</span>
+                {commentButton}
+                {commentCount}
             </CardContent>
         </Card>
     )
 }
 
-export default Scream;
+Scream.prototype = {
+    likeScream: PropTypes.func.isRequired,
+    unlikeScream: PropTypes.func.isRequired,
+    user: PropTypes.object.isRequired,
+    scream: PropTypes.object.isRequired
+
+}
+
+const mapStateToProps = state => ({
+    user: state.user
+})
+
+export default connect(mapStateToProps, { likeScream, unlikeScream })(Scream);
