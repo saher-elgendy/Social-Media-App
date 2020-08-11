@@ -3,7 +3,7 @@ import React from 'react';
 
 const ReusableButton = ({ children, onClick, title, btnClasses, tipClasses }) => {
     return (
-        <Tooltip title={title} className={tipClasses}>
+        <Tooltip title={title} className={tipClasses} placement="top">
             <IconButton
                 onClick={onClick}
                 className={btnClasses}
