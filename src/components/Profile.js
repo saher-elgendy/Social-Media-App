@@ -9,6 +9,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { CalendarToday, Edit, LocationOn, Link as LinkIcon } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import { uploadImage } from './../redux/actions/userActions';
+import ReusableButton from './reusable/ReusableButton';
 
 
 
@@ -52,11 +53,14 @@ const Profile = ({ user, uploadImage }) => {
                         onChange={handleImageChange}
                         hidden="hidden"
                     />
-                    <Tooltip title="Edit Profile Picture" placement="top">
-                        <IconButton onClick={handleEditPicture} className="button">
-                            <Edit color="primary" />
-                        </IconButton>
-                    </Tooltip>
+                    <ReusableButton
+                        title="Edit Profile Picture"
+                        btnClasses="button"
+                        onClick={handleEditPicture}
+                    >
+                        <Edit color="primary" />
+                    </ReusableButton>
+
                 </div>
                 <hr />
                 <div className="profile-details">
