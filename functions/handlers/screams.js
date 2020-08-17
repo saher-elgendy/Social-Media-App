@@ -16,7 +16,7 @@ exports.getAllScreams = (req, res) => {
           userImage: doc.data().userImage
         });
       });
-      return res.json({ screams });
+      return res.json(screams);
     })
     .catch(err => {
       console.error(err)
@@ -43,7 +43,7 @@ exports.postOneScream = (req, res) => {
     .then((doc) => {
       const resScream = newScream;
       resScream.screamId = doc.id
-      return res.status(201).json({ resScream });
+      return res.status(201).json(resScream);
     })
     .catch((err) => {
       res.status(500).json({ error: 'something went wrong' });
@@ -75,7 +75,6 @@ exports.getScream = (req, res) => {
       return res.json(screamData);
     })
     .catch((err) => {
-      console.error(err);
       res.status(500).json({ error: err });
     });
 }
