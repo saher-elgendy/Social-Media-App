@@ -1,6 +1,6 @@
 import { Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Chat, FavoriteBorder, Favorite } from '@material-ui/icons';
+import { Chat, Favorite, FavoriteBorder } from '@material-ui/icons';
 import dayjs from 'dayjs';
 import calendar from 'dayjs/plugin/calendar';
 import PropTypes from 'prop-types';
@@ -8,12 +8,14 @@ import React from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { likeScream, unlikeScream } from './../redux/actions/dataActions';
+import DeleteScream from './DeleteScream';
 import ReusableButton from './reusable/ReusableButton';
 
 const useStyles = makeStyles({
     card: {
         display: 'flex',
-        marginBottom: 20
+        marginBottom: 20,
+        position: 'relative'
     },
     content: {
         padding: 25,
@@ -24,8 +26,16 @@ const useStyles = makeStyles({
     }
 })
 
-const Scream = ({ user: { likes, authenticated }, scream, ...props }) => {
-    const { body, createdAt, userImage, userHandle, screamId, likeCount, commentCount } = scream;
+const Scream = ( { user: { credentials, likes, authenticated }, scream, ...props }) => {
+    const {
+        body,
+        createdAt,
+        userImage,
+        userHandle,
+        screamId,
+        likeCount,
+        commentCount } = scream;
+
     const classes = useStyles();
 
     dayjs.extend(calendar);
@@ -76,6 +86,10 @@ const Scream = ({ user: { likes, authenticated }, scream, ...props }) => {
             </ReusableButton>
         )
 
+
+    const deleteButton = authenticated && (userHandle === credentials.handle) ?
+        <DeleteScream screamId={screamId} /> : null
+
     return (
         <Card className={classes.card}>
             <CardMedia
@@ -90,23 +104,31 @@ const Scream = ({ user: { likes, authenticated }, scream, ...props }) => {
                     component={Link}
                     to={`/user/${userHandle}`}
                 >{userHandle}</Typography>
-                <Typography variant="body2" color="textSecondary">{dayjs().calendar(dayjs(createdAt))}</Typography>
+                {deleteButton}
+
+                <Typography
+                    variant="body2"
+                    color="textSecondary">
+                    {dayjs().calendar(dayjs(createdAt))}
+                </Typography>
+
                 <Typography variant="body1">{body}</Typography>
                 {likeButton}
                 <span>{likeCount}</span>
+                <span> likes</span>
                 {commentButton}
                 {commentCount}
+                <span> comments</span>
             </CardContent>
         </Card>
     )
 }
 
-Scream.prototype = {
+Scream.propTypes = {
     likeScream: PropTypes.func.isRequired,
     unlikeScream: PropTypes.func.isRequired,
     user: PropTypes.object.isRequired,
     scream: PropTypes.object.isRequired
-
 }
 
 const mapStateToProps = state => ({
