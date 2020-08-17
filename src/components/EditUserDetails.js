@@ -1,14 +1,15 @@
+import {
+    Button, Dialog, DialogActions, DialogContent,
+    DialogTitle, TextField
+} from '@material-ui/core';
 import makeStyles from '@material-ui/core/styles/makeStyles';
+import { Edit } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import React, { useState } from 'react';
 import { connect } from 'react-redux';
-import {
-    Tooltip, IconButton, TextField, Button, Dialog, DialogActions, DialogContent,
-    DialogContentText, DialogTitle
-} from '@material-ui/core';
-
-import { Edit } from '@material-ui/icons';
 import { editUserDetails } from '../redux/actions/userActions';
+import ReusableButton from './reusable/ReusableButton';
+
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread,
@@ -52,11 +53,13 @@ const EditUserDetails = ({ editUserDetails }) => {
 
     return (
         <>
-            <Tooltip title="Edit Details" placement="top" className={classes.tooltip}>
-                <IconButton onClick={handleOpen}>
-                    <Edit color="primary"></Edit>
-                </IconButton>
-            </Tooltip>
+            <ReusableButton
+                title="Edit Details"
+                tipClasses={classes.tooltip}
+                onClick={handleOpen}
+            >
+                <Edit color="primary" />
+            </ReusableButton>
             <Dialog
                 open={open}
                 onClose={handleClose}
@@ -106,7 +109,6 @@ const EditUserDetails = ({ editUserDetails }) => {
 EditUserDetails.propTypes = {
     editUserDetails: PropTypes.func.isRequired
 }
-
 
 const mapStateToProps = state => ({
     credentials: state.user.credentials
