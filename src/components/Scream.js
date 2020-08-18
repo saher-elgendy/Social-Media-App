@@ -1,7 +1,7 @@
 import { Card, CardContent, CardMedia, Typography } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
 import { Chat, Favorite, FavoriteBorder } from '@material-ui/icons';
-import dayjs from 'dayjs';
+import moment from 'moment';
 import calendar from 'dayjs/plugin/calendar';
 import PropTypes from 'prop-types';
 import React from 'react';
@@ -24,9 +24,11 @@ const useStyles = makeStyles({
     image: {
         minWidth: 200,
     }
-})
+});
 
-const Scream = ( { user: { credentials, likes, authenticated }, scream, ...props }) => {
+
+const Scream = ({ user: { credentials, likes, authenticated }, scream, ...props }) => {
+    console.log('scream', scream)
     const {
         body,
         createdAt,
@@ -37,8 +39,6 @@ const Scream = ( { user: { credentials, likes, authenticated }, scream, ...props
         commentCount } = scream;
 
     const classes = useStyles();
-
-    dayjs.extend(calendar);
 
     const liked = () => {
         if (likes && likes.find(like => like.screamId === scream.screamId)) {
@@ -109,7 +109,7 @@ const Scream = ( { user: { credentials, likes, authenticated }, scream, ...props
                 <Typography
                     variant="body2"
                     color="textSecondary">
-                    {dayjs().calendar(dayjs(createdAt))}
+                    {moment.utc(createdAt).calendar()}
                 </Typography>
 
                 <Typography variant="body1">{body}</Typography>
