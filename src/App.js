@@ -14,6 +14,7 @@ import store from './redux/store';
 import { SET_AUTHENTICATED } from './redux/types';
 import AuthRoute from './util/AuthRoute';
 import themeFile from './util/theme';
+import User from './pages/user';
 
 
 const theme = createMuiTheme(themeFile);
@@ -22,7 +23,6 @@ const token = localStorage.FBIdToken;
 
 if (token) {
   const decodedToken = jwtDecode(token);
-  console.log(decodedToken)
   if (decodedToken.exp * 1000 < Date.now()) {
     store.dispatch({ type: SET_AUTHENTICATED });
     axios.defaults.headers.common['Authorization'] = token;
@@ -37,15 +37,16 @@ if (token) {
 function App() {
   return (
     <MuiThemeProvider theme={theme}>
-      <BrowserRouter  >
+      <BrowserRouter >
         <div className="App">
           <Navbar />
           <div className="container">
             <Switch>
               <Route exact path="/" component={Home} />
-              <AuthRoute path="/signup" component={Signup} />
-              <AuthRoute path="/login" component={Login} />
-              <AuthRoute path="/logout" />
+              <AuthRoute exact path="/signup" component={Signup} />
+              <AuthRoute exact path="/login" component={Login} />
+              <AuthRoute exact path="/logout" />
+              <Route exact path="/user/:handle" component={User} />
             </Switch>
           </div>
         </div>
