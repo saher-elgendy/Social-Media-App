@@ -1,5 +1,12 @@
 import axios from 'axios';
-import { CLEAR_ERRORS, LOADING_UI, SET_ERRORS, SET_USER, SET_UNAUTHENTICATED, LOADING_USER } from './../types';
+import {
+    CLEAR_ERRORS,
+    LOADING_UI,
+    LOADING_USER,
+    SET_ERRORS,
+    SET_UNAUTHENTICATED,
+    SET_USER
+} from './../types';
 
 //login action creator
 export const loginUser = (loginData, history) => (dispatch) => {
@@ -68,24 +75,23 @@ const setAuthorizationHeader = (token) => {
 
 
 export const editUserDetails = userDetails => dispatch => {
-    dispatch({type: LOADING_USER});
+    dispatch({ type: LOADING_USER });
 
-    console.log(userDetails)
     axios.post('/user', userDetails)
-    .then(() => {
-        dispatch(getUserData());
-    })
-    .catch(err => console.log(err))
+        .then(() => {
+            dispatch(getUserData());
+        })
+        .catch(err => console.log(err))
 }
 
 
 //upload image action creator
 export const uploadImage = (formData) => dispatch => {
-    dispatch({type: LOADING_USER});
+    dispatch({ type: LOADING_USER });
 
     axios.post('/user/image', formData)
-    .then(() => {
-        dispatch(getUserData)
-    })
-    .catch(err => console.log(err))
+        .then(() => {
+            dispatch(getUserData)
+        })
+        .catch(err => console.log(err))
 }
