@@ -1,4 +1,11 @@
-import { LIKE_SCREAM, LOADING_USER, SET_AUTHENTICATED, SET_UNAUTHENTICATED, SET_USER, UNLIKE_SCREAM } from './../types';
+import {
+    LIKE_SCREAM,
+    LOADING_USER,
+    SET_AUTHENTICATED,
+    SET_UNAUTHENTICATED,
+    SET_USER,
+    UNLIKE_SCREAM
+} from './../types';
 
 const intialState = {
     authenticated: false,
@@ -28,7 +35,7 @@ export default (state = intialState, action) => {
                 loading: false,
                 ...action.payload,
             }
-            
+
         case LIKE_SCREAM:
             return {
                 ...state,
