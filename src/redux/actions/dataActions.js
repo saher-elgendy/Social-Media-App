@@ -1,16 +1,12 @@
 import axios from 'axios';
 import {
-    DELETE_SCREAM,
+    CLEAR_ERRORS, DELETE_SCREAM,
     LIKE_SCREAM,
     LOADING_DATA,
-    SET_SCREAMS,
-    UNLIKE_SCREAM,
-    POST_SCREAM,
-    SET_ERRORS,
-    CLEAR_ERRORS,
-    LOADING_UI
+    LOADING_UI, POST_SCREAM,
+    SET_ERRORS, SET_SCREAM, SET_SCREAMS, SET_USER_SCREAMS,
+    STOP_LOADING, SUBMIT_COMMENT, UNLIKE_SCREAM
 } from './../types';
-
 
 //Get All Screams
 export const getScreams = () => dispatch => {
@@ -31,6 +27,20 @@ export const getScreams = () => dispatch => {
         });
 }
 
+export const getScream = screamId => dispatch => {
+    dispatch({ type: LOADING_UI });
+
+    axios.get(`/scream/${screamId}`)
+        .then(res => {
+            dispatch({
+                type: SET_SCREAM,
+                payload: res.data
+            });
+
+            dispatch({ type: STOP_LOADING })
+        })
+        .catch(err => console.log(err))
+}
 //post a scream
 export const postNewScream = scream => dispatch => {
     dispatch({ type: LOADING_UI });
@@ -74,7 +84,30 @@ export const unlikeScream = screamId => dispatch => {
         .catch(err => console.log(err));
 }
 
+//submit comment
+export const submitComment = (screamId, comment) => dispatch => {
+    dispatch({
+        type: LOADING_UI
+    });
 
+    axios.post(`/scream/${screamId}/comment`, comment)
+        .then(res => {
+            dispatch({
+                type: SUBMIT_COMMENT,
+                payload: res.data
+            })
+
+            dispatch({
+                type: STOP_LOADING
+            })
+        })
+        .catch(err => {
+            dispatch({
+                type: SET_ERRORS,
+                payload: err.response && err.response.data
+            })
+        })
+}
 //delete scream
 export const deleteScream = screamId => dispatch => {
     axios.delete(`/scream/${screamId}`)
@@ -85,4 +118,26 @@ export const deleteScream = screamId => dispatch => {
             })
         })
         .catch(err => console.log(err));
+}
+
+//get user screams
+
+export const getUserScreams = userHandle => dispatch => {
+    dispatch({
+        type: LOADING_DATA
+    });
+
+    axios.get(`user/${userHandle}`)
+        .then(res => {
+            dispatch({
+                type: SET_USER_SCREAMS,
+                payload: res.data.screams
+            });
+        })
+        .catch(() => {
+            dispatch({
+                type: SET_USER_SCREAMS,
+                payload: null
+            })
+        });
 }
