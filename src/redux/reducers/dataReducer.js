@@ -2,15 +2,15 @@ import {
     DELETE_SCREAM,
     LIKE_SCREAM,
     LOADING_DATA,
-    SET_SCREAMS,
-    UNLIKE_SCREAM,
-    POST_SCREAM
+    POST_SCREAM, SET_SCREAM, SET_SCREAMS,
+    SUBMIT_COMMENT, UNLIKE_SCREAM, SET_USER_SCREAMS
 } from './../types';
 
 const initialState = {
     loading: false,
     screams: [],
-    scream: {}
+    scream: {},
+    userScreams: [],
 }
 
 export default (state = initialState, action) => {
@@ -26,19 +26,29 @@ export default (state = initialState, action) => {
                 screams: action.payload,
                 loading: false,
             }
+
+        case SET_SCREAM:
+            return {
+                ...state,
+                scream: action.payload,
+                loading: false
+            }
         case LIKE_SCREAM:
         case UNLIKE_SCREAM:
             let index = state.screams.findIndex(scream => scream.screamId === action.payload.screamId);
             state.screams[index] = action.payload;
-            return {
-                ...state
-            }
-        case DELETE_SCREAM:
-            index = state.screams.findIndex(scream => scream.screamId === action.payload);
-            state.screams.splice(index, 1);
 
             return {
-                ...state
+                ...state,
+                scream: {
+                    ...state.scream,
+                    likeCount: action.payload.likeCount
+                }
+            }
+        case DELETE_SCREAM:
+            return {
+                ...state,
+                screams: state.screams.filter(scream => scream.screamId !== action.payload)
             }
         case POST_SCREAM:
             return {
@@ -48,6 +58,33 @@ export default (state = initialState, action) => {
                     ...state.screams
                 ]
             }
+
+        case SUBMIT_COMMENT:
+            const screams = state.screams.map(scream => {
+                if(scream.screamId === action.payload.screamId) {
+                    return {
+                        ...scream,
+                        commentCount: scream.commentCount + 1
+                    }
+                }
+                return scream;
+            })
+            return {
+                ...state,
+                screams: screams,
+                scream: {
+                    ...state.scream,
+                    commentCount: state.scream.commentCount + 1,
+                    comments: [action.payload, ...state.scream.comments]
+                }
+            }
+
+
+           case SET_USER_SCREAMS:
+               return {
+                   ...state,
+                   userScreams: action.payload
+               }
         default:
             return state;
     }
