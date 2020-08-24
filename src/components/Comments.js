@@ -17,6 +17,10 @@ const useStyles = makeStyles(theme => ({
         textAlign: 'left',
         fontSize: 'medium'
     },
+    visibleSeperator: {
+        width: '100%',
+        borderBottom: '1px solid #eee' 
+    }
 }));
 
 const Comments = ({ comments, screamId, loading }) => {
