@@ -3,14 +3,14 @@ import {
     LIKE_SCREAM,
     LOADING_DATA,
     POST_SCREAM, SET_SCREAM, SET_SCREAMS,
-    SUBMIT_COMMENT, UNLIKE_SCREAM, SET_USER_SCREAMS
+    SUBMIT_COMMENT, UNLIKE_SCREAM, SET_USER_DATA
 } from './../types';
 
 const initialState = {
     loading: false,
     screams: [],
     scream: {},
-    userScreams: [],
+    userData: {},
 }
 
 export default (state = initialState, action) => {
@@ -61,10 +61,10 @@ export default (state = initialState, action) => {
 
         case SUBMIT_COMMENT:
             const screams = state.screams.map(scream => {
-                if(scream.screamId === action.payload.screamId) {
+                if (scream.screamId === action.payload.screamId) {
                     return {
                         ...scream,
-                        commentCount: scream.commentCount + 1
+                        commentCount: state.scream.commentCount + 1
                     }
                 }
                 return scream;
@@ -79,12 +79,12 @@ export default (state = initialState, action) => {
                 }
             }
 
+        case SET_USER_DATA:
+            return {
+                ...state,
+                userData: action.payload
+            }
 
-           case SET_USER_SCREAMS:
-               return {
-                   ...state,
-                   userScreams: action.payload
-               }
         default:
             return state;
     }
