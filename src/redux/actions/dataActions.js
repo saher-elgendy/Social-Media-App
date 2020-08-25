@@ -4,7 +4,7 @@ import {
     LIKE_SCREAM,
     LOADING_DATA,
     LOADING_UI, POST_SCREAM,
-    SET_ERRORS, SET_SCREAM, SET_SCREAMS, SET_USER_SCREAMS,
+    SET_ERRORS, SET_SCREAM, SET_SCREAMS, SET_USER_DATA,
     STOP_LOADING, SUBMIT_COMMENT, UNLIKE_SCREAM
 } from './../types';
 
@@ -120,23 +120,22 @@ export const deleteScream = screamId => dispatch => {
         .catch(err => console.log(err));
 }
 
-//get user screams
-
-export const getUserScreams = userHandle => dispatch => {
+//get user data
+export const getUserProfile = userHandle => dispatch => {
     dispatch({
         type: LOADING_DATA
     });
 
-    axios.get(`user/${userHandle}`)
+    axios.get(`/user/${userHandle}`)
         .then(res => {
             dispatch({
-                type: SET_USER_SCREAMS,
-                payload: res.data.screams
+                type: SET_USER_DATA,
+                payload: res.data
             });
         })
         .catch(() => {
             dispatch({
-                type: SET_USER_SCREAMS,
+                type: SET_USER_DATA,
                 payload: null
             })
         });
