@@ -19,4 +19,4 @@ export const LIKE_SCREAM = 'LIKE_SCREAM';
 export const UNLIKE_SCREAM = 'UNLIKE_SCREAM';
 export const DELETE_SCREAM = 'DELETE_SCREAM';
 export const SUBMIT_COMMENT = 'SUBMIT_COMMENT';
-export const SET_USER_SCREAMS = 'SET_USER_SCREAMS';
+export const SET_USER_DATA = 'SET_USER_DATA';
