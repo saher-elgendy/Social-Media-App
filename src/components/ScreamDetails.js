@@ -8,7 +8,7 @@ import { makeStyles } from '@material-ui/core/styles';
 import { Close, UnfoldMore } from '@material-ui/icons';
 import moment from 'moment';
 import PropTypes from 'prop-types';
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { connect } from 'react-redux';
 import { Link } from 'react-router-dom';
 import { getScream } from '../redux/actions/dataActions';
@@ -16,6 +16,7 @@ import Comments from './Comments';
 import CommentButton from './reusable/CommentButton';
 import LikeButton from './reusable/LikeButton';
 import ReusableButton from './reusable/ReusableButton';
+
 
 const useStyles = makeStyles(theme => ({
     ...theme.spread,
@@ -64,10 +65,9 @@ const useStyles = makeStyles(theme => ({
     }
 }));
 
-const ScreamDetails = ({ getScream, scream, screamId, loading }) => {
+const ScreamDetails = ({ getScream, scream, screamId, loading, openDialog, handle }) => {
     const {
         body,
-        userHandle,
         userImage,
         createdAt,
         likeCount,
@@ -75,17 +75,45 @@ const ScreamDetails = ({ getScream, scream, screamId, loading }) => {
         commentCount } = scream;
 
     const classes = useStyles();
-
     const [open, setOpen] = useState(false);
 
+    const [paths, setPaths] = useState({
+        oldPath: '',
+        newPath: ''
+    });
+
     const handleOpen = () => {
-        getScream(screamId)
+        const oldPath = window.location.pathname;
+        const newPath = `/users/${handle}/scream/${screamId}`;
+
+        if(paths.oldPath === newPath){
+            setPaths({
+                ...paths,
+                oldPath: `/users/${handle}`
+            });
+        } 
+
+        else {
+            setPaths({
+                oldPath,
+                newPath
+            });
+        }
+        //change path to the new one
+        window.history.pushState(null, null, newPath);
+        //open scream dialog
         setOpen(true);
+        getScream(screamId);
     }
 
     const handleClose = () => {
+        window.history.pushState(null, null, paths.oldPath)
         setOpen(false);
     }
+
+    useEffect(() => {
+        if (openDialog) handleOpen();
+    }, []);
 
     const DialogMarkup = loading ?
         (
@@ -106,9 +134,9 @@ const ScreamDetails = ({ getScream, scream, screamId, loading }) => {
                     component={Link}
                     color="primary"
                     variant="h5"
-                    to={`/users/${userHandle}`}
+                    to={`/users/${handle}`}
                 >
-                    @{userHandle}
+                    @{handle}
                 </Typography>
                 <Typography variant="body2" color="textSecondary">
                     {moment.utc(createdAt).calendar()}
@@ -158,8 +186,9 @@ ScreamDetails.propTypes = {
     getScream: PropTypes.func.isRequired,
     scream: PropTypes.object.isRequired,
     screamId: PropTypes.string.isRequired,
-    handle: PropTypes.string.isRequired,
     loaading: PropTypes.bool.isRequired,
+    handle: PropTypes.string.isRequired,
+    openDialog: PropTypes.bool
 }
 
 const mapStateToProps = state => ({

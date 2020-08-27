@@ -25,8 +25,7 @@ const useStyles = makeStyles({
     }
 });
 
-const Scream = ({ user: { credentials, authenticated }, scream }) => {
-
+const Scream = ({ user: { credentials, authenticated }, scream, openDialog }) => {
     const {
         body,
         createdAt,
@@ -54,7 +53,7 @@ const Scream = ({ user: { credentials, authenticated }, scream }) => {
                     variant="h5"
                     color="primary"
                     component={Link}
-                    to={`/user/${userHandle}`}
+                    to={`/users/${userHandle}`}
                 >{userHandle}</Typography>
                 {deleteButton}
 
@@ -71,13 +70,14 @@ const Scream = ({ user: { credentials, authenticated }, scream }) => {
                 <span>{commentCount} comments</span>
             </CardContent>
 
-            <ScreamDetails screamId={screamId} />
+            <ScreamDetails screamId={screamId} handle={userHandle} openDialog={openDialog} />
         </Card>
     )
 }
 
 Scream.propTypes = {
     user: PropTypes.object.isRequired,
+    openDialog: PropTypes.bool
 }
 
 const mapStateToProps = state => ({
