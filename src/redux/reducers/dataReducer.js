@@ -82,7 +82,8 @@ export default (state = initialState, action) => {
         case SET_USER_DATA:
             return {
                 ...state,
-                userData: action.payload
+                userData: action.payload,
+                loading: false
             }
 
         default:
