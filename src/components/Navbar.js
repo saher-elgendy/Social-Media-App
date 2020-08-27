@@ -37,7 +37,9 @@ const Navbar = ({ authenticated, logout }) => {
                     <>
                         <PostScream />
                         <ReusableButton title="Home">
-                            <Home className={classes.icon} />
+                            <Link to="/">
+                                <Home className={classes.icon} />
+                            </Link>
                         </ReusableButton>
                         <ReusableButton title="Notifications">
                             <Notifications className={classes.icon} />
