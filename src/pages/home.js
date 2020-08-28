@@ -8,14 +8,13 @@ import { getScreams } from '../redux/actions/dataActions';
 
 
 const Home = ({ getScreams, data: {screams, loading} }) => {
-
     useEffect(() => {
         getScreams();
     }, []);
 
     return (
         <Grid container spacing={2}>
-            <Grid item sm={8} xs={12}>
+            <Grid item lg={8} xs={12}>
                 {
                     !loading ? 
                         screams.map(scream => {
@@ -25,7 +24,7 @@ const Home = ({ getScreams, data: {screams, loading} }) => {
                         }) : 'Loading...'
                 }
             </Grid>
-            <Grid item sm={4} xs={12}>
+            <Grid item lg={4} xs={12} >
                 <Profile />
             </Grid>
         </Grid>
