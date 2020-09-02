@@ -38,8 +38,8 @@ const LikeButton = ({ user: { authenticated, likes }, likeScream, unlikeScream, 
 LikeButton.propTypes = {
     likeScream: PropTypes.func.isRequired,
     unlikeScream: PropTypes.func.isRequired,
-    scream: PropTypes.object.isRequired,
-    user: PropTypes.object.isRequired
+    user: PropTypes.object.isRequired,
+    screamId: PropTypes.string.isRequired
 };
 
 const mapStateToProps = state => ({
