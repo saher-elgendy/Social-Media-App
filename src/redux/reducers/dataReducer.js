@@ -6,6 +6,7 @@ import {
     SUBMIT_COMMENT, UNLIKE_SCREAM, SET_USER_DATA
 } from './../types';
 
+
 const initialState = {
     loading: false,
     screams: [],
@@ -33,23 +34,48 @@ export default (state = initialState, action) => {
                 scream: action.payload,
                 loading: false
             }
+
         case LIKE_SCREAM:
         case UNLIKE_SCREAM:
-            let index = state.screams.findIndex(scream => scream.screamId === action.payload.screamId);
-            state.screams[index] = action.payload;
+            const allScreams = state.screams.map(scream => {
+                if (scream.screamId === action.payload.screamId) {
+                    return {
+                        ...scream,
+                        likeCount: action.payload.likeCount
+                    }
+                }
+                return scream;
+            });
+
+            const userScreams = state.userData.screams.map(scream => {
+                if (scream.screamId === action.payload.screamId) {
+                    return {
+                        ...scream, 
+                        likeCount: action.payload.likeCount
+                    }
+                }
+                return scream;
+            })
 
             return {
                 ...state,
+                screams: allScreams,
                 scream: {
                     ...state.scream,
                     likeCount: action.payload.likeCount
+                },
+                userData: {
+                    ...state.userData,
+                    screams: userScreams
                 }
             }
+
         case DELETE_SCREAM:
             return {
                 ...state,
                 screams: state.screams.filter(scream => scream.screamId !== action.payload)
             }
+
         case POST_SCREAM:
             return {
                 ...state,
@@ -64,18 +90,34 @@ export default (state = initialState, action) => {
                 if (scream.screamId === action.payload.screamId) {
                     return {
                         ...scream,
-                        commentCount: state.scream.commentCount + 1
+                        commentCount: scream.commentCount + 1
                     }
                 }
                 return scream;
             })
+
+            const allUserScreams = state.userData.screams.map(scream => {
+                if (scream.screamId === action.payload.screamId) {
+                    return {
+                        ...scream,
+                        commentCount: scream.commentCount + 1
+                    }
+                }
+                return scream;
+            })
+
+
             return {
                 ...state,
-                screams: screams,
+                screams,
                 scream: {
                     ...state.scream,
                     commentCount: state.scream.commentCount + 1,
                     comments: [action.payload, ...state.scream.comments]
+                },
+                userData: {
+                    ...state.userData,
+                    screams: allUserScreams
                 }
             }
 
