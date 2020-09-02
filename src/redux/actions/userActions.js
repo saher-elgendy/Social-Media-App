@@ -5,7 +5,8 @@ import {
     LOADING_USER,
     SET_ERRORS,
     SET_UNAUTHENTICATED,
-    SET_USER
+    SET_USER,
+    MARK_NOTIFICATIONS_READ
 } from './../types';
 
 //login action creator
@@ -94,4 +95,15 @@ export const uploadImage = (formData) => dispatch => {
             dispatch(getUserData)
         })
         .catch(err => console.log(err))
+}
+
+//mark notifications read
+export const markNotificationsRead = notificationsIds => dispatch => {
+    axios.post('/notifications', notificationsIds)
+    .then(() => {
+        dispatch({
+            type: MARK_NOTIFICATIONS_READ
+        })
+    })
+    .catch(err => console.log(err))
 }
