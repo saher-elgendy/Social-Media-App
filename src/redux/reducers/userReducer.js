@@ -4,7 +4,8 @@ import {
     SET_AUTHENTICATED,
     SET_UNAUTHENTICATED,
     SET_USER,
-    UNLIKE_SCREAM
+    UNLIKE_SCREAM,
+    MARK_NOTIFICATIONS_READ
 } from './../types';
 
 const intialState = {
@@ -58,6 +59,12 @@ export default (state = intialState, action) => {
             return {
                 ...state,
                 loading: true,
+            }
+
+        case MARK_NOTIFICATIONS_READ:
+            return {
+                ...state,
+                notifications: state.notifications.map(n => ({ ...n, read: true }))
             }
 
         default:
