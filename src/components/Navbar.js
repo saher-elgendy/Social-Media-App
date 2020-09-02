@@ -1,7 +1,7 @@
 
 import { AppBar, Button, Toolbar } from '@material-ui/core';
 import { makeStyles } from '@material-ui/core/styles';
-import { Home, Notifications } from '@material-ui/icons';
+import { Home } from '@material-ui/icons';
 import PropTypes from 'prop-types';
 import React from 'react';
 import { connect } from 'react-redux';
@@ -9,6 +9,7 @@ import { Link } from 'react-router-dom';
 import { logout } from './../redux/actions/userActions';
 import ReusableButton from './reusable/ReusableButton';
 import PostScream from './PostScream';
+import Notifications from './Notifications';
 
 
 const useStyles = makeStyles(theme => ({
@@ -41,9 +42,9 @@ const Navbar = ({ authenticated, logout }) => {
                                 <Home className={classes.icon} />
                             </Link>
                         </ReusableButton>
-                        <ReusableButton title="Notifications">
-                            <Notifications className={classes.icon} />
-                        </ReusableButton>
+
+                        <Notifications />
+                        
                         <Button
                             component={Link}
                             to="/login"
