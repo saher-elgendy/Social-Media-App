@@ -89,8 +89,8 @@ const PostScream = ({ postNewScream, UI: { loading, errors } }) => {
                             onChange={handleChange}
                             fullWidth
                             multiline
-                            error={errors.body ? true : false}
-                            helperText={errors.body}
+                            error={errors && errors.body ? true : false}
+                            helperText={errors && errors.body ? errors.body : ''}
                         />
                     </form>
                 </DialogContent>
