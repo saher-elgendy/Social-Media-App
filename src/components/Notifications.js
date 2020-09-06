@@ -12,7 +12,7 @@ const Notifications = ({ markNotificationsRead, notifications }) => {
     const [anchorEl, setAnchorEl] = useState(null);
 
     const handleOpen = (e) => {
-        setAnchorEl(e.target)
+        setAnchorEl(e.currentTarget)
     }
 
     const handleClose = (e) => {
@@ -25,7 +25,6 @@ const Notifications = ({ markNotificationsRead, notifications }) => {
     }
 
     const unreadNotificationsCount = notifications.filter(n => !n.read).length;
-    console.log(notifications)
     const notificationsIcon =
         notifications && notifications.length > 0 && unreadNotificationsCount ?
             <Badge badgeContent={unreadNotificationsCount} color="secondary">
@@ -33,57 +32,37 @@ const Notifications = ({ markNotificationsRead, notifications }) => {
             </Badge> :
             <NotificationsIcon color="default" />
 
-    let notificationsMarkup =
-        notifications && notifications.length > 0 ? (
-            notifications.map((not) => {
-                const verb = not.type === 'like' ? 'liked' : 'commented on';
-                const time = moment(not.createdAt).fromNow();
-                const iconColor = not.read ? 'primary' : 'secondary';
-                const icon =
-                    not.type === 'like' ? (
-                        <Favorite color={iconColor} style={{ marginRight: 10 }} />
-                    ) : (
-                            <Chat color={iconColor} style={{ marginRight: 10 }} />
-                        );
+    const notificationsMarkup =
+        notifications && notifications.length ?
+            notifications.map(n => {
+                const verb = n.type === 'like' ? 'liked' : 'commented';
+                const iconColor = n.read ? 'primary' : 'secondary';
+                const icon = n.type === 'like' ? <Favorite color={iconColor} /> :
+                    <Chat color={iconColor} />
+                const time = moment(n.createdAt).fromNow();
 
                 return (
-                    <MenuItem key={not.createdAt} onClick={handleClose}>
+                    <MenuItem
+                        onClick={handleClose}
+                        component={Link}
+                        to={`/users/${n.recipient}/scream/${n.screamId}`}
+                    >
                         {icon}
                         <Typography
-                            component={Link}
-                            color="default"
                             variant="body1"
-                            to={`/users/${not.recipient}/scream/${not.screamId}`}
+                            style={{
+                                marginLeft: '10px'
+                            }}
                         >
-                            {not.sender} {verb} your scream {time}
+                            {n.sender} {verb} your scream {time}
                         </Typography>
                     </MenuItem>
-                );
-            })
-        ) : (
-                <MenuItem onClick={handleClose}>
-                    You have no notifications yet
-                </MenuItem>
-            );
+                )
+            }) : <MenuItem>
+                You Have No Notififcations
+            </MenuItem>
     return (
         <>
-            {/* <Tooltip placement="top" title="Notifications">
-                <IconButton
-                    aria-owns={anchorEl ? 'simple-menu' : 'undefined'}
-                    aria-haspopup="true"
-                    onClick={handleOpen}
-                >
-                    {notificationsIcon}
-                </IconButton>
-            </Tooltip>
-            <Menu
-                anhorEl={anchorEl}
-                open={Boolean(anchorEl)}
-                onClose={handleClose}
-                onEntered={onMenuOpened}
-            >
-                {notificationsMarkup}
-            </Menu> */}
             <Tooltip placement="top" title="Notifications">
                 <IconButton
                     aria-owns={anchorEl ? 'simple-menu' : undefined}
