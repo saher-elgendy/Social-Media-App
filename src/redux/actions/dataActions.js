@@ -56,7 +56,7 @@ export const postNewScream = scream => dispatch => {
         .catch(err => {
             dispatch({
                 type: SET_ERRORS,
-                payload: err.response.data
+                payload: err.response && err.response.data
             })
         })
 }
@@ -131,12 +131,12 @@ export const getUserProfile = userHandle => dispatch => {
             dispatch({
                 type: SET_USER_DATA,
                 payload: res.data
-            });
+            });         
         })
         .catch(() => {
             dispatch({
                 type: SET_USER_DATA,
-                payload: null
+                payload: []
             })
         });
 }
