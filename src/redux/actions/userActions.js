@@ -6,8 +6,7 @@ import {
     SET_ERRORS,
     SET_UNAUTHENTICATED,
     SET_USER,
-    MARK_NOTIFICATIONS_READ,
-    SET_AUTHENTICATED
+    MARK_NOTIFICATIONS_READ
 } from './../types';
 
 //login action creator
