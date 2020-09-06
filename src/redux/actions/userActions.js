@@ -6,13 +6,14 @@ import {
     SET_ERRORS,
     SET_UNAUTHENTICATED,
     SET_USER,
-    MARK_NOTIFICATIONS_READ
+    MARK_NOTIFICATIONS_READ,
+    SET_AUTHENTICATED
 } from './../types';
 
 //login action creator
 export const loginUser = (loginData, history) => (dispatch) => {
     dispatch({ type: LOADING_UI });
-
+    
     axios.post('/signin', loginData)
         .then(res => {
             setAuthorizationHeader(res.data.token);
@@ -56,7 +57,6 @@ export const logout = () => dispatch => {
 
 export const getUserData = () => dispatch => {
     dispatch({ type: LOADING_USER });
-
     axios.get('/user')
         .then(res => {
             dispatch({
@@ -82,7 +82,7 @@ export const editUserDetails = userDetails => dispatch => {
         .then(() => {
             dispatch(getUserData());
         })
-        .catch(err => console.log(err))
+        .catch(err => console.log(err));
 }
 
 
@@ -92,7 +92,7 @@ export const uploadImage = (formData) => dispatch => {
 
     axios.post('/user/image', formData)
         .then(() => {
-            dispatch(getUserData)
+            dispatch(getUserData())
         })
         .catch(err => console.log(err))
 }
