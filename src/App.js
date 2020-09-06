@@ -11,11 +11,10 @@ import Signup from './pages/signup';
 import { getUserData, logout } from './redux/actions/userActions';
 import store from './redux/store';
 //redux
-import { SET_AUTHENTICATED } from './redux/types';
 import AuthRoute from './util/AuthRoute';
 import themeFile from './util/theme';
 import User from './pages/user';
-
+import { SET_AUTHENTICATED } from './redux/types';
 
 const theme = createMuiTheme(themeFile);
 
@@ -33,7 +32,6 @@ if (token) {
   }
 }
 
-
 function App() {
   return (
     <MuiThemeProvider theme={theme}>
@@ -45,7 +43,6 @@ function App() {
               <Route exact path="/" component={Home} />
               <AuthRoute exact path="/signup" component={Signup} />
               <AuthRoute exact path="/login" component={Login} />
-              <AuthRoute exact path="/logout" />
               <Route exact path="/users/:handle" component={User} />
               <Route exact path="/users/:handle/scream/:screamId" component={User} />
             </Switch>
@@ -54,6 +51,7 @@ function App() {
       </BrowserRouter>
     </MuiThemeProvider>
   );
-}
+};
+
 
 export default App;
