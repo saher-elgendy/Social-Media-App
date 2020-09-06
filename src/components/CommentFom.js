@@ -34,7 +34,7 @@ const CommentFom = ({ screamId, errors, submitComment }) => {
                 name="comment"
                 label="Comment Scream"
                 onChange={handleChange}
-                error={errors.comment ? true : false}
+                error={errors && errors.comment ? true : false}
                 helperText={errors.comment}
                 fullWidth
                 multiline
